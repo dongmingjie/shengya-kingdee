@@ -1,0 +1,61 @@
+{
+    "name": "shengya/kingdee",
+    "description": "Kingdee K3Cloud WebAPI SDK with Laravel integration, call recording and base-data synchronization.",
+    "type": "library",
+    "keywords": [
+        "erp",
+        "k3cloud",
+        "kingdee",
+        "laravel",
+        "webapi"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Shengya Development Team",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/console": "^8.75 || ^9.0 || ^10.0 || ^11.0",
+        "illuminate/database": "^8.75 || ^9.0 || ^10.0 || ^11.0",
+        "illuminate/support": "^8.75 || ^9.0 || ^10.0 || ^11.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5 || ^10.5 || ^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shengya\\Kingdee\\": "src/",
+            "Shengya\\KingdeeLaravel\\": "laravel/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shengya\\Kingdee\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shengya\\KingdeeLaravel\\KingdeeServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/tests",
+            "/phpunit.xml.dist"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
