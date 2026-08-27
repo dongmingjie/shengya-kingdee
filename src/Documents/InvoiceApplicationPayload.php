@@ -44,6 +44,7 @@ final class InvoiceApplicationPayload extends AbstractDocumentPayload
             'FSaleOrgId' => self::baseData($input['sale_org_number'] ?? null),
             'FSALEDEPTID' => self::baseData($input['sale_department_number'] ?? null),
             'FSALEERID' => self::baseData($input['salesman_number'] ?? null),
+            'F_PAEZ_Base' => self::baseData($input['employee_number'] ?? null, 'FSTAFFNUMBER'),
             'F_PAEZ_Assistant' => self::baseData($input['project_number'] ?? null),
             'F_PAEZ_Base2' => self::baseData($input['performance_department_number'] ?? null),
             'F_PAEZ_Combo' => $input['invoice_type'] ?? null,
