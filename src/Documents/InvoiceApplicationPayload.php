@@ -44,7 +44,8 @@ final class InvoiceApplicationPayload extends AbstractDocumentPayload
             'FSaleOrgId' => self::baseData($input['sale_org_number'] ?? null),
             'FSALEDEPTID' => self::baseData($input['sale_department_number'] ?? null),
             'FSALEERID' => self::baseData($input['salesman_number'] ?? null),
-            'F_PAEZ_Base' => self::baseData($input['employee_number'] ?? null, 'FSTAFFNUMBER'),
+            // AR_receivable 的员工字段与销售员共用带岗位后缀的销售员任岗编码。
+            'F_PAEZ_Base1' => self::baseData($input['salesman_number'] ?? null, 'FSTAFFNUMBER'),
             'F_PAEZ_Assistant' => self::baseData($input['project_number'] ?? null),
             'F_PAEZ_Base2' => self::baseData($input['performance_department_number'] ?? null),
             'F_PAEZ_Combo' => $input['invoice_type'] ?? null,
