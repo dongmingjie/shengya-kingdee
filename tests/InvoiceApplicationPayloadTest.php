@@ -30,4 +30,19 @@ final class InvoiceApplicationPayloadTest extends TestCase
         );
         $this->assertArrayNotHasKey('F_PAEZ_Base', $payload['Model']);
     }
+
+    public function testItCreatesAFullReceiptPlanForInvoiceConversion(): void
+    {
+        $payload = InvoiceApplicationPayload::from([
+            'details' => [
+                ['material_number' => 'FW001', 'quantity' => 2, 'tax_price' => 125.5],
+            ],
+        ]);
+
+        $this->assertSame([[
+            'FEntryID' => 0,
+            'FPAYRATE' => 100,
+            'FPAYAMOUNTFOR' => 251.0,
+        ]], $payload['Model']['FEntityPlan']);
+    }
 }

@@ -13,6 +13,9 @@ final class InvoiceApplicationPayload extends AbstractDocumentPayload
      */
     public static function from(array $input): array
     {
+        $totalAmount = round(array_reduce((array) ($input['details'] ?? []), static function (float $sum, array $item): float {
+            return $sum + (float) ($item['quantity'] ?? 0) * (float) ($item['tax_price'] ?? 0);
+        }, 0.0), 2);
         $details = array_map(static function (array $item): array {
             return self::removeEmpty([
                 'FEntryID' => $item['entry_id'] ?? 0,
@@ -54,6 +57,12 @@ final class InvoiceApplicationPayload extends AbstractDocumentPayload
             'F_PAEZ_Text6' => $input['source_text'] ?? null,
             'FAR_Remark' => $input['remark'] ?? null,
             'FEntityDetail' => $details,
+            // 开票下推收款依赖收款计划分录 ID，新单据必须显式生成 100% 收款计划。
+            'FEntityPlan' => $totalAmount > 0 ? [[
+                'FEntryID' => 0,
+                'FPAYRATE' => 100,
+                'FPAYAMOUNTFOR' => $totalAmount,
+            ]] : [],
             'FsubHeadFinc' => $finance,
         ]);
 

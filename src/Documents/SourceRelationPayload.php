@@ -30,8 +30,9 @@ final class SourceRelationPayload extends AbstractDocumentPayload
         return [
             'FSRCBILLTYPEID' => self::mapping($mapping, 'source_form_id'),
             'FSRCBILLNO' => $source['bill_number'],
-            'FSRCBILLID' => $source['bill_id'],
-            'FSRCROWID' => $source['entry_id'],
+            // 金蝶收款源单头的两个字段命名容易误导：BILLID 实际接收计划分录 ID，ROWID 接收应收单 ID。
+            'FSRCBILLID' => $source['entry_id'],
+            'FSRCROWID' => $source['bill_id'],
             'FAFTTAXTOTALAMOUNT' => $source['total_amount'],
             'FPLANRECAMOUNT' => $source['plan_amount'],
             'FREALRECAMOUNT' => $source['current_amount'],
