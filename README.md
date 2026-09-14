@@ -95,6 +95,13 @@ return [
     'records' => [
         // 调用记录连接、表名和降级日志通道。
     ],
+    'documents' => [
+        'connection' => 'mysql',
+        'tables' => [
+            'invoice_applications' => 'kd_invoice_applications',
+            'receipts' => 'kd_receipts',
+        ],
+    ],
     'sensitive_keys' => [
         'password', 'token', 'authorization', 'cookie', 'bankaccount', 'mobile',
     ],
@@ -114,6 +121,8 @@ php artisan vendor:publish \
 ```
 
 组件不会自动执行迁移。发布后请先在宿主项目审阅文件，再按项目的发布流程处理。
+其中 `kd_invoice_applications` 和 `kd_receipts` 保存组件单据；`kd_call_records`
+只保存认证、查询、Save、Submit、Audit 等每次接口执行记录。
 
 ## 基础资料同步
 
