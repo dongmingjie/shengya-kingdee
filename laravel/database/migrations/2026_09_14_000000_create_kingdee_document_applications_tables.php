@@ -17,14 +17,14 @@ class CreateKingdeeDocumentApplicationsTables extends Migration
 
         $schema->create($this->table('invoice_applications'), function (Blueprint $table) {
             $this->commonColumns($table);
-            $table->unsignedBigInteger('source_receipt_id')->nullable()->index()->comment('来源收款 Save 调用记录ID');
+            $table->unsignedBigInteger('source_receipt_id')->nullable()->index()->comment('来源组件收款单ID');
             $table->index(['project_number', 'status'], 'kd_invoice_project_status_idx');
         });
 
         $schema->create($this->table('receipts'), function (Blueprint $table) {
             $this->commonColumns($table);
             $table->unsignedBigInteger('bank_flow_id')->nullable()->index()->comment('宿主银行流水ID');
-            $table->unsignedBigInteger('source_invoice_id')->nullable()->index()->comment('来源开票 Save 调用记录ID');
+            $table->unsignedBigInteger('source_invoice_id')->nullable()->index()->comment('来源组件开票申请单ID');
             $table->index(['bank_flow_id', 'status'], 'kd_receipt_flow_status_idx');
             $table->index(['project_number', 'status'], 'kd_receipt_project_status_idx');
         });
