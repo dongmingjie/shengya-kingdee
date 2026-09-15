@@ -28,6 +28,13 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
             ]);
         }, (array) ($input['details'] ?? []));
 
+        $finance = self::removeEmpty([
+            'FMAINBOOKSTDCURRID' => self::baseData($input['currency_number'] ?? null),
+            // 递延单表头“不含税金额”取来源开票单全部明细的不含税收入合计，
+            // 与本次选择递延的明细金额无关，字段属于金蝶财务子表 FsubHeadFinc。
+            'FNoTaxAmountFor' => $input['source_amount_without_tax'] ?? null,
+        ]);
+
         $model = self::removeEmpty([
             'FID' => $input['id'] ?? 0,
             'FBillNo' => $input['number'] ?? null,
@@ -49,9 +56,9 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
             'F_PAEZ_Text3' => $input['customer_name'] ?? null,
             'F_PAEZ_Text4' => $input['source_text'] ?? 'crm',
             'FAR_Remark' => $input['remark'] ?? null,
-            // FNoTaxAmountFor 属于金蝶财务子表，旧系统也不直接提交；由完整源单关系自动带出。
             'FISTAX' => true,
             'FEntity' => $details,
+            'FsubHeadFinc' => $finance,
         ]);
 
         return self::saveData($model, ['FEntity.FEntryID']);

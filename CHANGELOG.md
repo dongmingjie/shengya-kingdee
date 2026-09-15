@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-09-15
+
+- Wrote the source invoice's full amount-without-tax total to the deferred document finance subhead (`FsubHeadFinc.FNoTaxAmountFor`).
+
 ## [0.1.5] - 2026-09-15
 
 - Stopped writing the finance-subhead `FNoTaxAmountFor` field into `BillHead`; Kingdee now derives it from the source relation as in the legacy flow.
