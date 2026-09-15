@@ -134,6 +134,37 @@ final class KingdeeDeferredIncomeAllocatorTest extends TestCase
         $this->assertNull($lines[1]->kingdee_entry_id);
     }
 
+    public function testItMapsEntryIdsFromTheActualReceivableViewEntityShape(): void
+    {
+        $invoice = KingdeeInvoiceApplication::forceCreate(['status' => 'approved']);
+        $synchronizer = new KingdeeInvoiceLineSynchronizer();
+        $synchronizer->sync($invoice, [
+            [
+                'material_number' => 'FW001', 'quantity' => 1, 'tax_rate' => 3,
+                'tax_price' => 100, 'amount_without_tax' => 97.09, 'tax_amount' => 2.91,
+                'confirm_income' => true,
+            ],
+            [
+                'material_number' => 'FW002', 'quantity' => 1, 'tax_rate' => 6,
+                'tax_price' => 200, 'amount_without_tax' => 188.68, 'tax_amount' => 11.32,
+                'confirm_income' => false,
+            ],
+        ]);
+
+        // 当前账套 View 返回内部实体名 AP_PAYABLEENTRY，并使用 Id/Seq 字段。
+        $synchronizer->syncDeferrableEntryIds($invoice, ['Result' => ['Result' => [
+            'AP_PAYABLEENTRY' => [
+                ['Id' => 146039, 'Seq' => 1],
+                ['Id' => 146040, 'Seq' => 2],
+            ],
+        ]]]);
+
+        $this->assertSame(
+            '146040',
+            KingdeeInvoiceApplicationLine::query()->where('line_no', 2)->value('kingdee_entry_id')
+        );
+    }
+
     public function testItRejectsConfirmedIncomeLines(): void
     {
         $line = $this->invoiceLine(true, 100);

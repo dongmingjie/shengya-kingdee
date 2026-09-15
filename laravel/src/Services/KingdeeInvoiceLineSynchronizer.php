@@ -99,7 +99,9 @@ final class KingdeeInvoiceLineSynchronizer
                     'lines' => '第'.$line->line_no.'条不确认收入明细未找到对应的金蝶分录序号，无法建立源单关联',
                 ]);
             }
-            $entryId = $this->arrayValue($kingdeeLines[$matchedIndex], 'FEntryID');
+            // Save 返回 FEntryID，View 在当前账套返回 AP_PAYABLEENTRY.Id。
+            $entryId = $this->arrayValue($kingdeeLines[$matchedIndex], 'FEntryID')
+                ?? $this->arrayValue($kingdeeLines[$matchedIndex], 'Id');
             if ($entryId === null || $entryId === '' || (int) $entryId <= 0) {
                 throw ValidationException::withMessages([
                     'lines' => '第'.$line->line_no.'条金蝶开票明细缺少分录内码，无法递延',
@@ -122,7 +124,10 @@ final class KingdeeInvoiceLineSynchronizer
             if (! is_array($kingdeeLine) || in_array($index, $usedIndexes, true)) {
                 continue;
             }
-            $sequence = (int) ($this->arrayValue($kingdeeLine, 'FSeq') ?? ($index + 1));
+            // Save 返回 FSeq，View 在当前账套返回 Seq。
+            $sequence = (int) ($this->arrayValue($kingdeeLine, 'FSeq')
+                ?? $this->arrayValue($kingdeeLine, 'Seq')
+                ?? ($index + 1));
             if ($sequence === (int) $localLine->line_no) {
                 return (int) $index;
             }
@@ -137,8 +142,12 @@ final class KingdeeInvoiceLineSynchronizer
     private function findEntityDetails(array $payload): array
     {
         foreach ($payload as $key => $value) {
-            if (strcasecmp((string) $key, 'FEntityDetail') === 0 && is_array($value)) {
-                if ($this->arrayValue($value, 'FEntryID') !== null) {
+            // 不同金蝶入口使用业务实体标识或内部实体名返回同一组应收明细。
+            $isInvoiceEntity = strcasecmp((string) $key, 'FEntityDetail') === 0
+                || strcasecmp((string) $key, 'AP_PAYABLEENTRY') === 0;
+            if ($isInvoiceEntity && is_array($value)) {
+                if ($this->arrayValue($value, 'FEntryID') !== null
+                    || $this->arrayValue($value, 'Id') !== null) {
                     return [$value];
                 }
 

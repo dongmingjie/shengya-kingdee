@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-09-15
+
+- Added support for receivable View responses using `AP_PAYABLEENTRY.Id` and `AP_PAYABLEENTRY.Seq`.
+
 ## [0.1.3] - 2026-09-15
 
 - Fixed deferred-income source links by persisting and requiring the source invoice entry ID.
