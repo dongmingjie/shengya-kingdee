@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Shengya\Kingdee\Contracts\KingdeeClientInterface;
 use Shengya\Kingdee\Contracts\KingdeeOperationsInterface;
 use Shengya\Kingdee\Documents\InvoiceApplicationPayload;
+use Shengya\Kingdee\Documents\DeferredIncomePayload;
 use Shengya\Kingdee\Documents\ReceiptPayload;
 use Shengya\Kingdee\Documents\RefundPayload;
 use Shengya\Kingdee\Documents\SourceRelationPayload;
@@ -42,6 +43,11 @@ final class KingdeeOperations implements KingdeeOperationsInterface
         $input['source_entries'] = [SourceRelationPayload::receiptFromInvoice($source, $mapping)];
 
         return $this->saveWithMapping($mapping, ReceiptPayload::from($input), $context);
+    }
+
+    public function createDeferredIncome(array $input, ?CallContext $context = null): KingdeeResponse
+    {
+        return $this->save('create_deferred_income', DeferredIncomePayload::from($input), $context);
     }
 
     public function createRefundFromInvoice(array $input, array $source, ?CallContext $context = null): KingdeeResponse

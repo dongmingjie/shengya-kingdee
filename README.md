@@ -11,6 +11,7 @@
 
 - 登录并维护金蝶 Cookie 会话。
 - 查询、查看、保存、提交和审核单据。
+- 开票明细独立存储，以及按来源明细额度生成递延收益结转单。
 - 调用链 `trace_id` / `request_id` 与安全重试。
 - 递归脱敏请求及响应中的敏感字段。
 - Laravel 调用记录与失败日志降级。
@@ -99,7 +100,10 @@ return [
         'connection' => 'mysql',
         'tables' => [
             'invoice_applications' => 'kd_invoice_applications',
+            'invoice_application_lines' => 'kd_invoice_application_lines',
             'receipts' => 'kd_receipts',
+            'deferred_income_applications' => 'kd_deferred_income_applications',
+            'deferred_income_application_lines' => 'kd_deferred_income_application_lines',
         ],
     ],
     'sensitive_keys' => [
@@ -123,6 +127,8 @@ php artisan vendor:publish \
 组件不会自动执行迁移。发布后请先在宿主项目审阅文件，再按项目的发布流程处理。
 其中 `kd_invoice_applications` 和 `kd_receipts` 保存组件单据；`kd_call_records`
 只保存认证、查询、Save、Submit、Audit 等每次接口执行记录。
+开票明细、递延申请和递延额度占用分别保存在组件的 `kd_invoice_application_lines`、
+`kd_deferred_income_applications` 和 `kd_deferred_income_application_lines` 中。
 
 ## 基础资料同步
 

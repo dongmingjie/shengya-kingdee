@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-15
+
+- Added package-owned invoice-line, deferred-income application and deferred allocation tables.
+- Added line-level deferred-income quota locking and invoice-line synchronization services.
+- Added the Kingdee deferred-income payload and standalone create operation.
+
 ## [0.1.1] - 2026-09-14
 
 - Added employee-number and salesperson-position mappings for invoice applications.

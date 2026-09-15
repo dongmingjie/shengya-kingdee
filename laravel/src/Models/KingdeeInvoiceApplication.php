@@ -8,6 +8,19 @@ namespace Shengya\KingdeeLaravel\Models;
 class KingdeeInvoiceApplication extends KingdeeDocumentApplication
 {
     /**
+     * 开票单头与金蝶明细保持一对多，不能从 request_payload 临时猜测明细身份。
+     */
+    public function lines()
+    {
+        return $this->hasMany(KingdeeInvoiceApplicationLine::class, 'invoice_application_id');
+    }
+
+    public function deferredIncomeApplications()
+    {
+        return $this->hasMany(KingdeeDeferredIncomeApplication::class, 'source_invoice_id');
+    }
+
+    /**
      * 来源收款单属于组件业务数据，不能关联到只负责审计的调用记录表。
      */
     public function sourceReceipt()

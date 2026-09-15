@@ -16,6 +16,8 @@ interface KingdeeOperationsInterface
 
     public function createReceiptFromInvoice(array $input, array $source, ?CallContext $context = null): KingdeeResponse;
 
+    public function createDeferredIncome(array $input, ?CallContext $context = null): KingdeeResponse;
+
     public function createRefundFromInvoice(array $input, array $source, ?CallContext $context = null): KingdeeResponse;
 
     public function createRefundFromReceipt(array $input, array $source, ?CallContext $context = null): KingdeeResponse;
