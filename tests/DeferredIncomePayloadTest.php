@@ -13,6 +13,8 @@ final class DeferredIncomePayloadTest extends TestCase
             'income_date' => '2026-09-15',
             'currency_number' => 'PRE001',
             'project_number' => 'SYJY-SH-2026001',
+            // 来源开票单还包含确认收入行，因此表头总额可以大于本次递延明细合计。
+            'source_amount_without_tax' => 1500.00,
             'details' => [
                 [
                     'material_number' => 'FW001',
@@ -20,6 +22,11 @@ final class DeferredIncomePayloadTest extends TestCase
                     'amount_without_tax' => 660.38,
                     'tax_amount' => 39.62,
                     'source_bill_number' => 'AR00001',
+                    'source_bill_type' => 'AR_receivable',
+                    'source_bill_id' => 88,
+                    'source_table' => 't_AR_receivableEntry',
+                    'source_entry_id' => 101,
+                    'convert_rule_id' => 'AR_TO_DEFERRED',
                 ],
                 [
                     'material_number' => 'FW002',
@@ -27,13 +34,20 @@ final class DeferredIncomePayloadTest extends TestCase
                     'amount_without_tax' => 283.02,
                     'tax_amount' => 16.98,
                     'source_bill_number' => 'AR00001',
+                    'source_bill_type' => 'AR_receivable',
+                    'source_bill_id' => 88,
+                    'source_table' => 't_AR_receivableEntry',
+                    'source_entry_id' => 102,
+                    'convert_rule_id' => 'AR_TO_DEFERRED',
                 ],
             ],
         ]);
 
         $this->assertCount(2, $payload['Model']['FEntity']);
-        $this->assertSame(700, $payload['Model']['FEntity'][0]['F_PAEZ_Amount']);
-        $this->assertSame(300, $payload['Model']['FEntity'][1]['F_PAEZ_Amount']);
+        // 递延明细金额使用不含税口径，表头则保持来源开票单全部不含税金额。
+        $this->assertSame(660.38, $payload['Model']['FEntity'][0]['F_PAEZ_Amount']);
+        $this->assertSame(283.02, $payload['Model']['FEntity'][1]['F_PAEZ_Amount']);
+        $this->assertSame(1500.00, $payload['Model']['FNoTaxAmountFor']);
         $this->assertFalse($payload['IsAutoSubmitAndAudit']);
     }
 
@@ -42,18 +56,33 @@ final class DeferredIncomePayloadTest extends TestCase
         $payload = DeferredIncomePayload::from([
             'details' => [[
                 'material_number' => 'FW001',
-                'amount_with_tax' => 100,
+                'amount_without_tax' => 100,
                 'source_table' => 't_AR_receivableEntry',
                 'source_bill_id' => 88,
+                'source_bill_number' => 'AR00001',
+                'source_bill_type' => 'AR_receivable',
                 'source_entry_id' => 99,
                 'convert_rule_id' => 'AR_TO_DEFERRED',
             ]],
         ]);
 
         $this->assertSame(
-            '99',
+            99,
             $payload['Model']['FEntity'][0]['FEntity_Link'][0]['FEntity_Link_FSId']
         );
+    }
+
+    public function testItRejectsADeferredDocumentWithoutACompleteSourceLink(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        DeferredIncomePayload::from([
+            'details' => [[
+                'material_number' => 'FW001',
+                'amount_without_tax' => 100,
+                'source_bill_id' => 88,
+            ]],
+        ]);
     }
 
     public function testItMapsTheVerifiedDeferredIncomeHeaderFields(): void

@@ -141,7 +141,7 @@ final class KingdeeDeferredIncomeAllocatorTest extends TestCase
         $this->expectException(ValidationException::class);
         (new KingdeeDeferredIncomeAllocator())->prepare(1, [[
             'invoice_application_line_id' => $line->id,
-            'amount_with_tax' => 10,
+            'amount_without_tax' => 10,
         ]]);
     }
 
@@ -155,14 +155,15 @@ final class KingdeeDeferredIncomeAllocatorTest extends TestCase
 
         $prepared = (new KingdeeDeferredIncomeAllocator())->prepare(1, [[
             'invoice_application_line_id' => $line->id,
-            'amount_with_tax' => 30,
+            'amount_without_tax' => 30,
         ]]);
-        $this->assertSame(30.0, $prepared[0]['amount_with_tax']);
+        $this->assertSame(30.0, $prepared[0]['amount_without_tax']);
+        $this->assertSame(31.8, $prepared[0]['amount_with_tax']);
 
         $this->expectException(ValidationException::class);
         (new KingdeeDeferredIncomeAllocator())->prepare(1, [[
             'invoice_application_line_id' => $line->id,
-            'amount_with_tax' => 30.01,
+            'amount_without_tax' => 30.01,
         ]]);
     }
 
@@ -174,10 +175,10 @@ final class KingdeeDeferredIncomeAllocatorTest extends TestCase
             'material_number' => 'FW001',
             'quantity' => 1,
             'tax_rate' => 6,
-            'tax_price' => $amount,
-            'amount_with_tax' => $amount,
-            'amount_without_tax' => round($amount / 1.06, 2),
-            'tax_amount' => round($amount - $amount / 1.06, 2),
+            'tax_price' => round($amount * 1.06, 2),
+            'amount_with_tax' => round($amount * 1.06, 2),
+            'amount_without_tax' => $amount,
+            'tax_amount' => round($amount * 0.06, 2),
             'confirm_income' => $confirmIncome,
         ]);
     }
@@ -196,9 +197,9 @@ final class KingdeeDeferredIncomeAllocatorTest extends TestCase
             'deferred_income_application_id' => $application->id,
             'invoice_application_line_id' => $line->id,
             'line_no' => 1,
-            'amount_with_tax' => $amount,
             'amount_without_tax' => $amount,
-            'tax_amount' => 0,
+            'amount_with_tax' => round($amount * 1.06, 2),
+            'tax_amount' => round($amount * 0.06, 2),
         ]);
     }
 

@@ -66,6 +66,11 @@ final class InvoiceApplicationPayload extends AbstractDocumentPayload
             'FsubHeadFinc' => $finance,
         ]);
 
-        return self::saveData($model, ['FEntityDetail.FEntryID', 'FEntityPlan.FEntryID']);
+        // 分录序号和内码用于递延单建立可联查的逐行源单关系。
+        return self::saveData($model, [
+            'FEntityDetail.FEntryID',
+            'FEntityDetail.FSeq',
+            'FEntityPlan.FEntryID',
+        ]);
     }
 }

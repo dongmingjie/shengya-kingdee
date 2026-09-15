@@ -19,11 +19,12 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
             return self::removeEmpty([
                 'FEntryID' => $item['entry_id'] ?? 0,
                 'FMATERIALID' => self::baseData($item['material_number'] ?? null),
-                'F_PAEZ_Amount' => $item['amount_with_tax'] ?? null,
+                // 金蝶递延明细“金额”采用本次递延的不含税金额。
+                'F_PAEZ_Amount' => $item['amount_without_tax'] ?? null,
                 'F_PAEZ_SourceBillNo' => $item['source_bill_number'] ?? null,
                 'F_PAEZ_SourceBillType' => $item['source_bill_type'] ?? null,
                 'F_PAEZ_Integer' => $item['source_bill_id'] ?? null,
-                'FEntity_Link' => $sourceLink ? [$sourceLink] : [],
+                'FEntity_Link' => [$sourceLink],
             ]);
         }, (array) ($input['details'] ?? []));
 
@@ -48,6 +49,8 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
             'F_PAEZ_Text3' => $input['customer_name'] ?? null,
             'F_PAEZ_Text4' => $input['source_text'] ?? 'crm',
             'FAR_Remark' => $input['remark'] ?? null,
+            // 表头不含税金额固定为来源开票申请全部明细不含税合计，不等于本次递延明细合计。
+            'FNoTaxAmountFor' => $input['source_amount_without_tax'] ?? null,
             'FISTAX' => true,
             'FEntity' => $details,
         ]);
@@ -56,21 +59,25 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
     }
 
     /**
-     * 金蝶源单关联配置为空时只保留来源单号，避免生成不完整的 Link 报文。
+     * 递延单必须带完整来源分录关系，否则金蝶可以保存但无法通过“关联查询”反查开票单。
      */
     private static function sourceLink(array $item): array
     {
         $sourceTable = trim((string) ($item['source_table'] ?? ''));
-        $sourceEntryId = trim((string) ($item['source_entry_id'] ?? ''));
+        $sourceEntryId = (int) ($item['source_entry_id'] ?? 0);
         $convertRuleId = trim((string) ($item['convert_rule_id'] ?? ''));
-        if ($sourceTable === '' || $sourceEntryId === '' || $convertRuleId === '') {
-            return [];
+        $sourceBillId = (int) ($item['source_bill_id'] ?? 0);
+        $sourceBillNumber = trim((string) ($item['source_bill_number'] ?? ''));
+        $sourceBillType = trim((string) ($item['source_bill_type'] ?? ''));
+        if ($sourceTable === '' || $sourceEntryId <= 0 || $convertRuleId === ''
+            || $sourceBillId <= 0 || $sourceBillNumber === '' || $sourceBillType === '') {
+            throw new \InvalidArgumentException('递延明细缺少来源开票分录关系，不能生成金蝶单据');
         }
 
         return self::removeEmpty([
             'FEntity_Link_FRuleId' => $convertRuleId,
             'FEntity_Link_FSTableName' => $sourceTable,
-            'FEntity_Link_FSBillId' => $item['source_bill_id'] ?? null,
+            'FEntity_Link_FSBillId' => $sourceBillId,
             'FEntity_Link_FSId' => $sourceEntryId,
         ]);
     }

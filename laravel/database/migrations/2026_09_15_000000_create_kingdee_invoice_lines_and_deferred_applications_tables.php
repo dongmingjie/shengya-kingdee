@@ -88,7 +88,7 @@ class CreateKingdeeInvoiceLinesAndDeferredApplicationsTables extends Migration
         $table->string('organization_number', 100)->nullable()->index()->comment('主业务组织编码');
         $table->string('counterparty_number', 191)->nullable()->index()->comment('客户编码');
         $table->string('counterparty_name', 191)->nullable()->comment('客户名称');
-        $table->decimal('amount', 18, 2)->default(0)->comment('递延申请税后/含税金额');
+        $table->decimal('amount', 18, 2)->default(0)->comment('本次递延不含税金额');
         $table->unsignedBigInteger('applicant_id')->nullable()->index()->comment('宿主申请人ID');
         $table->string('applicant_name', 100)->nullable()->comment('申请人名称快照');
         $table->longText('request_payload')->nullable()->comment('业务表单快照');

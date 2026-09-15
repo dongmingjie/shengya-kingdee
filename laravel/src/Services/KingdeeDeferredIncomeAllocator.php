@@ -53,8 +53,9 @@ final class KingdeeDeferredIncomeAllocator
                 ]);
             }
 
-            $amount = round((float) $allocation['amount_with_tax'], 2);
-            if ($amount <= 0) {
+            // 财务口径以不含税金额递延；含税金额只按来源税率反算用于核对。
+            $amountWithoutTax = round((float) $allocation['amount_without_tax'], 2);
+            if ($amountWithoutTax <= 0) {
                 throw ValidationException::withMessages(['lines' => '本次递延金额必须大于0']);
             }
 
@@ -66,16 +67,17 @@ final class KingdeeDeferredIncomeAllocator
             if ($excludeApplicationId) {
                 $usedQuery->where('deferred_income_application_id', '<>', $excludeApplicationId);
             }
-            $used = round((float) $usedQuery->sum('amount_with_tax'), 2);
-            $available = round((float) $line->amount_with_tax - $used, 2);
-            if ($amount > $available + 0.001) {
+            $used = round((float) $usedQuery->sum('amount_without_tax'), 2);
+            $available = round((float) $line->amount_without_tax - $used, 2);
+            if ($amountWithoutTax > $available + 0.001) {
                 throw ValidationException::withMessages([
-                    'lines' => '第'.$line->line_no.'条开票明细剩余可递延金额为'.number_format(max(0, $available), 2),
+                    'lines' => '第'.$line->line_no.'条开票明细剩余可递延不含税金额为'.number_format(max(0, $available), 2),
                 ]);
             }
 
             $taxRate = (float) $line->tax_rate;
-            $amountWithoutTax = round($amount / (1 + $taxRate / 100), 2);
+            $taxAmount = round($amountWithoutTax * $taxRate / 100, 2);
+            $amountWithTax = round($amountWithoutTax + $taxAmount, 2);
 
             return [
                 'invoice_application_line_id' => (int) $line->id,
@@ -83,9 +85,9 @@ final class KingdeeDeferredIncomeAllocator
                 'material_number' => (string) $line->material_number,
                 'material_name' => (string) $line->material_name,
                 'tax_rate' => $taxRate,
-                'amount_with_tax' => $amount,
+                'amount_with_tax' => $amountWithTax,
                 'amount_without_tax' => $amountWithoutTax,
-                'tax_amount' => round($amount - $amountWithoutTax, 2),
+                'tax_amount' => $taxAmount,
                 'source_entry_id' => $line->kingdee_entry_id,
             ];
         }, array_values($allocations));

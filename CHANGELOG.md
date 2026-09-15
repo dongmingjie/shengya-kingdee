@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-15
+
+- Fixed deferred-income source links by persisting and requiring the source invoice entry ID.
+- Changed deferred allocation limits and line amounts to the finance-approved amount-without-tax basis.
+- Added the source invoice's full amount-without-tax total to the deferred-income header.
+
 ## [0.1.2] - 2026-09-15
 
 - Added package-owned invoice-line, deferred-income application and deferred allocation tables.

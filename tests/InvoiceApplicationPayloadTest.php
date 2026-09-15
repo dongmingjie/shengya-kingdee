@@ -44,5 +44,6 @@ final class InvoiceApplicationPayloadTest extends TestCase
             'FPAYRATE' => 100,
             'FPAYAMOUNTFOR' => 251.0,
         ]], $payload['Model']['FEntityPlan']);
+        $this->assertContains('FEntityDetail.FSeq', $payload['NeedReturnFields']);
     }
 }
