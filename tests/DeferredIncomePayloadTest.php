@@ -44,10 +44,10 @@ final class DeferredIncomePayloadTest extends TestCase
         ]);
 
         $this->assertCount(2, $payload['Model']['FEntity']);
-        // 递延明细金额使用不含税口径，表头则保持来源开票单全部不含税金额。
+        // 递延明细金额使用不含税口径；表头金额由金蝶根据源单关系自动带出。
         $this->assertSame(660.38, $payload['Model']['FEntity'][0]['F_PAEZ_Amount']);
         $this->assertSame(283.02, $payload['Model']['FEntity'][1]['F_PAEZ_Amount']);
-        $this->assertSame(1500.00, $payload['Model']['FNoTaxAmountFor']);
+        $this->assertArrayNotHasKey('FNoTaxAmountFor', $payload['Model']);
         $this->assertFalse($payload['IsAutoSubmitAndAudit']);
     }
 

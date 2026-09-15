@@ -49,8 +49,7 @@ final class DeferredIncomePayload extends AbstractDocumentPayload
             'F_PAEZ_Text3' => $input['customer_name'] ?? null,
             'F_PAEZ_Text4' => $input['source_text'] ?? 'crm',
             'FAR_Remark' => $input['remark'] ?? null,
-            // 表头不含税金额固定为来源开票申请全部明细不含税合计，不等于本次递延明细合计。
-            'FNoTaxAmountFor' => $input['source_amount_without_tax'] ?? null,
+            // FNoTaxAmountFor 属于金蝶财务子表，旧系统也不直接提交；由完整源单关系自动带出。
             'FISTAX' => true,
             'FEntity' => $details,
         ]);

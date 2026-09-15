@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-09-15
+
+- Stopped writing the finance-subhead `FNoTaxAmountFor` field into `BillHead`; Kingdee now derives it from the source relation as in the legacy flow.
+
 ## [0.1.4] - 2026-09-15
 
 - Added support for receivable View responses using `AP_PAYABLEENTRY.Id` and `AP_PAYABLEENTRY.Seq`.

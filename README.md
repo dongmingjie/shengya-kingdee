@@ -129,7 +129,7 @@ php artisan vendor:publish \
 只保存认证、查询、Save、Submit、Audit 等每次接口执行记录。
 开票明细、递延申请和递延额度占用分别保存在组件的 `kd_invoice_application_lines`、
 `kd_deferred_income_applications` 和 `kd_deferred_income_application_lines` 中。
-递延结转单表头不含税金额取来源开票单全部明细的不含税合计；递延明细和额度控制
+递延结转单表头不含税金额由金蝶根据源单关系带出来源开票单全部明细的不含税合计；递延明细和额度控制
 则使用本次选择的“不确认收入”明细不含税金额。递延 Save 必须携带来源应收分录内码，
 以保证金蝶“关联查询”可以反查来源开票申请单。
 
